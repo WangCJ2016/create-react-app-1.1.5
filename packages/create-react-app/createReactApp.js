@@ -66,6 +66,7 @@ const program = new commander.Command(packageJson.name)
     '--scripts-version <alternative-package>',
     'use a non-standard version of react-scripts'
   )
+  .option('--multiple', 'use multiple module create object')
   .option('--use-npm')
   .allowUnknownOption()
   .on('--help', () => {
@@ -149,11 +150,12 @@ createApp(
   projectName,
   program.verbose,
   program.scriptsVersion,
-  program.useNpm,
-  hiddenProgram.internalTestingTemplate
+  true,
+  hiddenProgram.internalTestingTemplate,
+  program.multiple
 );
 
-function createApp(name, verbose, version, useNpm, template) {
+function createApp(name, verbose, version, useNpm, template, multiple) {
   const root = path.resolve(name);
   const appName = path.basename(root);
 
@@ -177,6 +179,7 @@ function createApp(name, verbose, version, useNpm, template) {
   );
 
   const useYarn = useNpm ? false : shouldUseYarn();
+  console.log(useYarn)
   const originalDirectory = process.cwd();
   process.chdir(root);
   if (!useYarn && !checkThatNpmCanReadCwd()) {
@@ -209,7 +212,7 @@ function createApp(name, verbose, version, useNpm, template) {
       version = 'react-scripts@0.9.x';
     }
   }
-  run(root, appName, version, verbose, originalDirectory, template, useYarn);
+  run(root, appName, version, verbose, originalDirectory, template, useYarn, multiple);
 }
 
 function shouldUseYarn() {
@@ -281,7 +284,8 @@ function run(
   verbose,
   originalDirectory,
   template,
-  useYarn
+  useYarn,
+  multiple
 ) {
   const packageToInstall = getInstallPackage(version, originalDirectory);
   const allDependencies = ['react', 'react-dom', packageToInstall];
@@ -320,7 +324,7 @@ function run(
         'init.js'
       );
       const init = require(scriptsPath);
-      init(root, appName, verbose, originalDirectory, template);
+      init(root, appName, verbose, originalDirectory, template, multiple);
 
       if (version === 'react-scripts@0.9.x') {
         console.log(

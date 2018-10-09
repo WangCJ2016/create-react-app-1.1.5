@@ -1,17 +1,17 @@
 {
-  "name": "create-react-app",
-  "version": "1.5.2",
+  "name": "create-react-app-lama",
+  "version": "0.0.3",
   "keywords": [
     "react"
   ],
   "description": "Create React apps with no build configuration.",
-  "repository": "facebookincubator/create-react-app",
+  "repository": "WangCJ2016/create-react-app-1.1.5",
   "license": "MIT",
   "engines": {
     "node": ">=4"
   },
   "bugs": {
-    "url": "https://github.com/facebookincubator/create-react-app/issues"
+    "url": "https://github.com/WangCJ2016/create-react-app-1.1.5/issues"
   },
   "files": [
     "index.js",

@@ -24,14 +24,15 @@ module.exports = function(
   appName,
   verbose,
   originalDirectory,
-  template
+  template,
+  multiple
 ) {
   const ownPackageName = require(path.join(__dirname, '..', 'package.json'))
     .name;
   const ownPath = path.join(appPath, 'node_modules', ownPackageName);
   const appPackage = require(path.join(appPath, 'package.json'));
   const useYarn = fs.existsSync(path.join(appPath, 'yarn.lock'));
-
+  console.log(multiple)
   // Copy over some of the devDependencies
   appPackage.dependencies = appPackage.dependencies || {};
 
@@ -59,7 +60,7 @@ module.exports = function(
   // Copy the files for the user
   const templatePath = template
     ? path.resolve(originalDirectory, template)
-    : path.join(ownPath, 'template');
+    : path.join(ownPath, multiple ? 'template2':'template');
   if (fs.existsSync(templatePath)) {
     fs.copySync(templatePath, appPath);
   } else {

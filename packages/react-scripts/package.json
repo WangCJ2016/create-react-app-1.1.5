@@ -1,20 +1,21 @@
 {
-  "name": "react-scripts",
-  "version": "1.1.5",
+  "name": "lama-react-scripts",
+  "version": "0.1.3",
   "description": "Configuration and scripts for Create React App.",
-  "repository": "facebookincubator/create-react-app",
+  "repository": "WangCJ2016/create-react-app-1.1.5",
   "license": "MIT",
   "engines": {
     "node": ">=6"
   },
   "bugs": {
-    "url": "https://github.com/facebookincubator/create-react-app/issues"
+    "url": "https://github.com/WangCJ2016/create-react-app-1.1.5/issues"
   },
   "files": [
     "bin",
     "config",
     "scripts",
     "template",
+    "template2",
     "utils"
   ],
   "bin": {
@@ -55,6 +56,7 @@
     "style-loader": "0.19.0",
     "sw-precache-webpack-plugin": "0.11.4",
     "url-loader": "0.6.2",
+    "web-webpack-plugin": "^1.10.6",
     "webpack": "3.8.1",
     "webpack-dev-server": "2.11.3",
     "webpack-manifest-plugin": "1.3.2",

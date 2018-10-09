@@ -48,6 +48,15 @@ dotenvFiles.forEach(dotenvFile => {
   }
 });
 
+// 判断pages文件夹是否存在
+function fsExistsSync(path) {
+  try {
+    fs.accessSync(path, fs.F_OK);
+  } catch (e) {
+    return false;
+  }
+  return true;
+}
 // We support resolving modules according to `NODE_PATH`.
 // This lets you use absolute paths in imports inside large monorepos:
 // https://github.com/facebookincubator/create-react-app/issues/253.
@@ -58,6 +67,8 @@ dotenvFiles.forEach(dotenvFile => {
 // https://github.com/facebookincubator/create-react-app/issues/1023#issuecomment-265344421
 // We also resolve them to make sure all tools using them work consistently.
 const appDirectory = fs.realpathSync(process.cwd());
+// multiple
+const pagesDirectoryIf = fsExistsSync(path.join(appDirectory, 'pages'));
 process.env.NODE_PATH = (process.env.NODE_PATH || '')
   .split(path.delimiter)
   .filter(folder => folder && !path.isAbsolute(folder))
@@ -85,6 +96,7 @@ function getClientEnvironment(publicUrl) {
         // This should only be used as an escape hatch. Normally you would put
         // images into the `src` and `import` them in code to get their paths.
         PUBLIC_URL: publicUrl,
+        pagesDirectoryIf: pagesDirectoryIf
       }
     );
   // Stringify all values so we can feed into Webpack DefinePlugin
