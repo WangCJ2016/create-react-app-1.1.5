@@ -115,6 +115,8 @@ module.exports = {
     // `web` extension prefixes have been added for better support
     // for React Native Web.
     extensions: ['.web.js', '.mjs', '.js', '.json', '.web.jsx', '.jsx'],
+
+    mainFields: ['jsnext:main', 'browser', 'main'],
     alias: {
       
       // Support React Native Web
