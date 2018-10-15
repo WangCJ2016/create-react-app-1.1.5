@@ -25,14 +25,16 @@ module.exports = function(
   verbose,
   originalDirectory,
   template,
-  multiple
+  multiple,
+  ts
 ) {
   const ownPackageName = require(path.join(__dirname, '..', 'package.json'))
     .name;
   const ownPath = path.join(appPath, 'node_modules', ownPackageName);
   const appPackage = require(path.join(appPath, 'package.json'));
   const useYarn = fs.existsSync(path.join(appPath, 'yarn.lock'));
-  console.log(multiple)
+  console.log('multiple');
+  console.log(multiple);
   // Copy over some of the devDependencies
   appPackage.dependencies = appPackage.dependencies || {};
 
@@ -58,10 +60,22 @@ module.exports = function(
   }
 
   // Copy the files for the user
+  let useTemplate;
+  if (ts) {
+    useTemplate = 'template-ts';
+  } else if (multiple) {
+    useTemplate = 'template2';
+  } else {
+    useTemplate = 'template';
+  }
+
   const templatePath = template
     ? path.resolve(originalDirectory, template)
-    : path.join(ownPath, multiple ? 'template2':'template');
+    : path.join(ownPath, useTemplate);
   if (fs.existsSync(templatePath)) {
+    if (ts) {
+      console.log('using ts');
+    }
     fs.copySync(templatePath, appPath);
   } else {
     console.error(
@@ -121,7 +135,7 @@ module.exports = function(
   // which doesn't install react and react-dom along with react-scripts
   // or template is presetend (via --internal-testing-template)
   if (!isReactInstalled(appPackage) || template) {
-    console.log(`Installing react and react-dom using ${command}...`);
+    console.log(`11 Installing react and react-dom using ${command}...`);
     console.log();
 
     const proc = spawn.sync(command, args, { stdio: 'inherit' });

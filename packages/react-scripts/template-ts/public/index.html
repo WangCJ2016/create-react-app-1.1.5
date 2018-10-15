@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="theme-color" content="#000000">
+    <!--
+      manifest.json provides metadata used when your web app is added to the
+      homescreen on Android. See https://developers.google.com/web/fundamentals/engage-and-retain/web-app-manifest/
+    -->
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json">
+    <!--
+      Notice the use of %PUBLIC_URL% in the tags above.
+      It will be replaced with the URL of the `public` folder during the build.
+      Only files inside the `public` folder can be referenced from the HTML.
+
+      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
+      work correctly both with client-side routing and a non-root public URL.
+      Learn how to configure a non-root public URL by running `npm run build`.
+    -->
+    <title>Babytree</title>
+    <script src="http://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+    <script>
+      fetch('http://yangqianyi.babytree-dev.com/wetime/promo/share/get_wx_sign')
+      .then(res => res.json())
+      .then(res => {
+        
+        if(res.status === 'success') {
+          var sign = res.data
+          sign.jsApiList = ['onMenuShareTimeline','onMenuShareAppMessage','onMenuShareQQ','onMenuShareWeibo','onMenuShareQZone'];
+          console.log(sign)
+          wx.config(sign);
+          wx.ready(() => {
+            // config信息验证后会执行ready方法，所有接口调用都必须在config接口获得结果之后，config是一个客户端的异步操作，所以如果需要在页面加载时就调用相关接口，则须把相关接口放在ready函数中调用来确保正确执行。对于用户触发时才调用的接口，则可以直接调用，不需要放在ready函数中。
+            var opt = {
+                title: '体验最潮黑科技，关键它还和你有关',
+                desc: '打开小时光实验室，体验一切和你有关的东方神秘黑科技',
+                link: windows.location.href,
+                imgUrl: 'http://pic10.babytreeimg.com/2018/0716/FkPQyH4UyGihDQ1Qi_h3BzXJ-pie_sm.jpg',
+            };
+            wx.onMenuShareAppMessage(opt);
+            wx.onMenuShareTimeline(opt);
+            wx.onMenuShareQQ(opt);
+            wx.onMenuShareWeibo(opt);
+            wx.onMenuShareQZone(opt);
+        });
+        wx.error(function(res){
+            // config信息验证失败会执行error函数，如签名过期导致验证失败，具体错误信息可以打开config的debug模式查看，也可以在返回的res参数中查看，对于SPA可以在这里更新签名。
+            console.log(res);
+        });
+        }
+      })
+      .catch(err => {
+        console.warn(err)
+      })
+    </script>
+  </head>
+  <body>
+    <noscript>
+      You need to enable JavaScript to run this app.
+    </noscript>
+    <div id="root"></div>
+    <!--
+      This HTML file is a template.
+      If you open it directly in the browser, you will see an empty page.
+
+      You can add webfonts, meta tags, or analytics to this file.
+      The build step will place the bundled scripts into the <body> tag.
+
+      To begin the development, run `npm start` or `yarn start`.
+      To create a production bundle, use `npm run build` or `yarn build`.
+    -->
+    
+    <script src="https://as.alipayobjects.com/g/component/fastclick/1.0.6/fastclick.js"></script>
+    <script>
+      if ('addEventListener' in document) {
+        document.addEventListener('DOMContentLoaded', function() {
+          FastClick.attach(document.body);
+        }, false);
+      }
+    </script>
+  </body>
+</html>

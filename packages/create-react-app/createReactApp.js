@@ -51,6 +51,7 @@ const envinfo = require('envinfo');
 
 const packageJson = require('./package.json');
 
+console.log('hello world 112312321421');
 let projectName;
 
 const program = new commander.Command(packageJson.name)
@@ -67,6 +68,7 @@ const program = new commander.Command(packageJson.name)
     'use a non-standard version of react-scripts'
   )
   .option('--multiple', 'use multiple module create object')
+  .option('--ts', 'using typescript')
   .option('--use-npm')
   .allowUnknownOption()
   .on('--help', () => {
@@ -152,10 +154,11 @@ createApp(
   program.scriptsVersion,
   true,
   hiddenProgram.internalTestingTemplate,
-  program.multiple
+  program.multiple,
+  program.ts
 );
 
-function createApp(name, verbose, version, useNpm, template, multiple) {
+function createApp(name, verbose, version, useNpm, template, multiple, ts) {
   const root = path.resolve(name);
   const appName = path.basename(root);
 
@@ -179,7 +182,7 @@ function createApp(name, verbose, version, useNpm, template, multiple) {
   );
 
   const useYarn = useNpm ? false : shouldUseYarn();
-  console.log(useYarn)
+  console.log(useYarn);
   const originalDirectory = process.cwd();
   process.chdir(root);
   if (!useYarn && !checkThatNpmCanReadCwd()) {
@@ -212,7 +215,17 @@ function createApp(name, verbose, version, useNpm, template, multiple) {
       version = 'react-scripts@0.9.x';
     }
   }
-  run(root, appName, version, verbose, originalDirectory, template, useYarn, multiple);
+  run(
+    root,
+    appName,
+    version,
+    verbose,
+    originalDirectory,
+    template,
+    useYarn,
+    multiple,
+    ts
+  );
 }
 
 function shouldUseYarn() {
@@ -285,7 +298,8 @@ function run(
   originalDirectory,
   template,
   useYarn,
-  multiple
+  multiple,
+  ts
 ) {
   const packageToInstall = getInstallPackage(version, originalDirectory);
   const allDependencies = ['react', 'react-dom', packageToInstall];
@@ -324,8 +338,7 @@ function run(
         'init.js'
       );
       const init = require(scriptsPath);
-      init(root, appName, verbose, originalDirectory, template, multiple);
-
+      init(root, appName, verbose, originalDirectory, template, multiple, ts);
       if (version === 'react-scripts@0.9.x') {
         console.log(
           chalk.yellow(
@@ -485,7 +498,10 @@ function getPackageName(installPackage) {
     );
   } else if (installPackage.match(/^file:/)) {
     const installPackagePath = installPackage.match(/^file:(.*)?$/)[1];
-    const installPackageJson = require(path.join(installPackagePath, 'package.json'));
+    const installPackageJson = require(path.join(
+      installPackagePath,
+      'package.json'
+    ));
     return Promise.resolve(installPackageJson.name);
   }
   return Promise.resolve(installPackage);

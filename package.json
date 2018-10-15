@@ -1,5 +1,6 @@
 {
   "private": true,
+  "name": "create-react-app-lama",
   "workspaces": [
     "packages/*"
   ],
