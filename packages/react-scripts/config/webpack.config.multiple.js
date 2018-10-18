@@ -13,11 +13,18 @@ const paths = require('./paths');
 const { AutoWebPlugin } = require('web-webpack-plugin');
 const getClientEnvironment = require('./env');
 
-const appSrc =  path.resolve('./pages')
+const postcssAspectRatioMini = require('postcss-aspect-ratio-mini'); //
+const postcssPxToViewport = require('postcss-px-to-viewport-opt');
+const postcssWriteSvg = require('postcss-write-svg');
+const postcssCssnext = require('postcss-cssnext');
+const postcssViewportUnits = require('postcss-viewport-units');
+const cssnano = require('cssnano');
+
+const appSrc = path.resolve('./pages');
 // Webpack uses `publicPath` to determine where the app is being served from.
 // It requires a trailing slash, or the file assets will get an incorrect path.
 const publicPath = paths.servedPath;
-console.log(publicPath)
+console.log(publicPath);
 // Some apps do not use client-side routing with pushState.
 // For these, "homepage" can be set to "." to enable relative asset paths.
 const shouldUseRelativeAssetPaths = publicPath === './';
@@ -30,28 +37,28 @@ const publicUrl = publicPath.slice(0, -1);
 // Get environment variables to inject into our app.
 const env = getClientEnvironment(publicUrl);
 
-let arr = []
+let arr = [];
 // 使用主角 AutoWebPlugin，自动寻找 pages 目录下的所有目录，把每一个目录看成一个单页应用
 const autoWebPlugin = new AutoWebPlugin('pages', {
-    template: pageName => {
-      arr = [...arr, path.resolve('./pages', pageName, 'node_modules')]
-      return path.resolve('./pages', pageName, 'public', 'index.html')
-    }, // HTML 模版文件所在的文件路径
-    //   postEntrys: ['./common.css'],// 所有页面都依赖这份通用的 CSS 样式文件
-    // 提取出所有页面公共的代码
-    entry: pageName => {
-      return path.resolve('./pages', pageName, 'src', 'index.js');
-    },
-    preEntrys: [require.resolve('./polyfills')],
-    // commonsChunk: {
-    //   name: 'common',// 提取出公共代码 Chunk 的名称
-    // },
-  });
-  
-  // 如果不存在pages则抛出错误
-  if (!env.raw.pagesDirectoryIf) {
-    throw new Error('pages directory must be haven');
-  }
+  template: pageName => {
+    arr = [...arr, path.resolve('./pages', pageName, 'node_modules')];
+    return path.resolve('./pages', pageName, 'public', 'index.html');
+  }, // HTML 模版文件所在的文件路径
+  //   postEntrys: ['./common.css'],// 所有页面都依赖这份通用的 CSS 样式文件
+  // 提取出所有页面公共的代码
+  entry: pageName => {
+    return path.resolve('./pages', pageName, 'src', 'index.js');
+  },
+  preEntrys: [require.resolve('./polyfills')],
+  commonsChunk: {
+    name: 'common', // 提取出公共代码 Chunk 的名称
+  },
+});
+
+// 如果不存在pages则抛出错误
+if (!env.raw.pagesDirectoryIf) {
+  throw new Error('pages directory must be haven');
+}
 // Assert this just to be safe.
 // Development builds of React are slow and not intended for production.
 if (env.stringified['process.env'].NODE_ENV !== '"production"') {
@@ -80,9 +87,11 @@ module.exports = {
   // You can exclude the *.map files from the build during deployment.
   devtool: shouldUseSourceMap ? 'source-map' : false,
   // In production, we only want to load the polyfills and the app code.
-  entry: autoWebPlugin.entry({
-    // 这里可以加入你额外需要的 Chunk 入口
-  }),
+  entry: autoWebPlugin.entry(
+    {
+      // 这里可以加入你额外需要的 Chunk 入口
+    }
+  ),
   output: {
     // The build folder.
     path: paths.appBuild,
@@ -118,7 +127,6 @@ module.exports = {
 
     mainFields: ['jsnext:main', 'browser', 'main'],
     alias: {
-      
       // Support React Native Web
       // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
       'react-native': 'react-native-web',
@@ -163,7 +171,7 @@ module.exports = {
           },
         ],
         include: appSrc,
-        exclude: arr
+        exclude: arr,
       },
       {
         // "oneOf" will traverse all following loaders until one will
@@ -183,14 +191,22 @@ module.exports = {
           // Process JS with Babel.
           {
             test: /\.(js|jsx|mjs)$/,
-            include: appSrc,
+            include: [paths.appSrc, paths.appComm],
             exclude: arr,
             loader: require.resolve('babel-loader'),
             options: {
-              // @remove-on-eject-begin
+              plugins: [
+                [
+                  require.resolve('babel-plugin-import'),
+                  {
+                    libraryName: 'antd-mobile',
+                    style: 'css',
+                  },
+                ],
+                require.resolve('babel-plugin-transform-decorators-legacy'),
+              ],
               babelrc: false,
               presets: [require.resolve('babel-preset-react-app')],
-              // @remove-on-eject-end
               compact: true,
             },
           },
@@ -243,9 +259,175 @@ module.exports = {
                             ],
                             flexbox: 'no-2009',
                           }),
+                          postcssAspectRatioMini({}),
+                          postcssPxToViewport({
+                            viewportWidth: 750, // (Number) The width of the viewport.
+                            viewportHeight: 1334, // (Number) The height of the viewport.
+                            unitPrecision: 3, // (Number) The decimal numbers to allow the REM units to grow to.
+                            viewportUnit: 'vw', // (String) Expected units.
+                            selectorBlackList: ['.ignore', '.hairlines'], // (Array) The selectors to ignore and leave as px.
+                            minPixelValue: 1, // (Number) Set the minimum pixel value to replace.
+                            mediaQuery: false, // (Boolean) Allow px to be converted in media queries.
+                            exclude: /(\/|\\)(node_modules)(\/|\\)/,
+                          }),
+                          postcssWriteSvg({
+                            utf8: false,
+                          }),
+                          postcssCssnext({
+                            warnForDuplicates: false,
+                          }),
+                          postcssViewportUnits({}),
+                          cssnano({
+                            preset: 'advanced',
+                            autoprefixer: false,
+                            'postcss-zindex': false,
+                          }),
                         ],
                       },
                     },
+                  ],
+                },
+                extractTextPluginOptions
+              )
+            ),
+            // Note: this won't work without `new ExtractTextPlugin()` in `plugins`.
+          },
+          {
+            test: /\.less$/,
+            loader: ExtractTextPlugin.extract(
+              Object.assign(
+                {
+                  fallback: {
+                    loader: require.resolve('style-loader'),
+                    options: {
+                      hmr: false,
+                    },
+                  },
+                  use: [
+                    {
+                      loader: require.resolve('css-loader'),
+                      options: {
+                        importLoaders: 1,
+                        minimize: true,
+                        sourceMap: shouldUseSourceMap,
+                      },
+                    },
+                    {
+                      loader: require.resolve('postcss-loader'),
+                      options: {
+                        // Necessary for external CSS imports to work
+                        // https://github.com/facebookincubator/create-react-app/issues/2677
+                        ident: 'postcss',
+                        plugins: () => [
+                          require('postcss-flexbugs-fixes'),
+                          autoprefixer({
+                            browsers: [
+                              '>1%',
+                              'last 4 versions',
+                              'Firefox ESR',
+                              'not ie < 9', // React doesn't support IE8 anyway
+                            ],
+                            flexbox: 'no-2009',
+                          }),
+                          postcssAspectRatioMini({}),
+                          postcssPxToViewport({
+                            viewportWidth: 750, // (Number) The width of the viewport.
+                            viewportHeight: 1334, // (Number) The height of the viewport.
+                            unitPrecision: 3, // (Number) The decimal numbers to allow the REM units to grow to.
+                            viewportUnit: 'vw', // (String) Expected units.
+                            selectorBlackList: ['.ignore', '.hairlines'], // (Array) The selectors to ignore and leave as px.
+                            minPixelValue: 1, // (Number) Set the minimum pixel value to replace.
+                            mediaQuery: false, // (Boolean) Allow px to be converted in media queries.
+                            exclude: /(\/|\\)(node_modules)(\/|\\)/,
+                          }),
+                          postcssWriteSvg({
+                            utf8: false,
+                          }),
+                          postcssCssnext({
+                            warnForDuplicates: false,
+                          }),
+                          postcssViewportUnits({}),
+                          cssnano({
+                            preset: 'advanced',
+                            autoprefixer: false,
+                            'postcss-zindex': false,
+                          }),
+                        ],
+                      },
+                    },
+                    require.resolve('less-loader'),
+                  ],
+                },
+                extractTextPluginOptions
+              )
+            ),
+            // Note: this won't work without `new ExtractTextPlugin()` in `plugins`.
+          },
+          // sass
+          {
+            test: /\.scss$/,
+            loader: ExtractTextPlugin.extract(
+              Object.assign(
+                {
+                  fallback: {
+                    loader: require.resolve('style-loader'),
+                    options: {
+                      hmr: false,
+                    },
+                  },
+                  use: [
+                    {
+                      loader: require.resolve('css-loader'),
+                      options: {
+                        importLoaders: 1,
+                        minimize: true,
+                        sourceMap: shouldUseSourceMap,
+                      },
+                    },
+                    {
+                      loader: require.resolve('postcss-loader'),
+                      options: {
+                        // Necessary for external CSS imports to work
+                        // https://github.com/facebookincubator/create-react-app/issues/2677
+                        ident: 'postcss',
+                        plugins: () => [
+                          require('postcss-flexbugs-fixes'),
+                          autoprefixer({
+                            browsers: [
+                              '>1%',
+                              'last 4 versions',
+                              'Firefox ESR',
+                              'not ie < 9', // React doesn't support IE8 anyway
+                            ],
+                            flexbox: 'no-2009',
+                          }),
+                          postcssAspectRatioMini({}),
+                          postcssPxToViewport({
+                            viewportWidth: 750, // (Number) The width of the viewport.
+                            viewportHeight: 1334, // (Number) The height of the viewport.
+                            unitPrecision: 3, // (Number) The decimal numbers to allow the REM units to grow to.
+                            viewportUnit: 'vw', // (String) Expected units.
+                            selectorBlackList: ['.ignore', '.hairlines'], // (Array) The selectors to ignore and leave as px.
+                            minPixelValue: 1, // (Number) Set the minimum pixel value to replace.
+                            mediaQuery: false, // (Boolean) Allow px to be converted in media queries.
+                            exclude: /(\/|\\)(node_modules)(\/|\\)/,
+                          }),
+                          postcssWriteSvg({
+                            utf8: false,
+                          }),
+                          postcssCssnext({
+                            warnForDuplicates: false,
+                          }),
+                          postcssViewportUnits({}),
+                          cssnano({
+                            preset: 'advanced',
+                            autoprefixer: false,
+                            'postcss-zindex': false,
+                          }),
+                        ],
+                      },
+                    },
+                    require.resolve('sass-loader'),
                   ],
                 },
                 extractTextPluginOptions
@@ -313,6 +495,7 @@ module.exports = {
         // Pending further investigation:
         // https://github.com/mishoo/UglifyJS2/issues/2011
         comparisons: false,
+        drop_console: true, //删除console
       },
       mangle: {
         safari10: true,
@@ -354,7 +537,6 @@ module.exports = {
           // https://github.com/facebookincubator/create-react-app/issues/2612
           return;
         }
-        console.log(message);
       },
       minify: true,
       // For unknown URLs, fallback to the index page

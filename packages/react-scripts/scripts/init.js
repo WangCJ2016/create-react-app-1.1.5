@@ -33,8 +33,6 @@ module.exports = function(
   const ownPath = path.join(appPath, 'node_modules', ownPackageName);
   const appPackage = require(path.join(appPath, 'package.json'));
   const useYarn = fs.existsSync(path.join(appPath, 'yarn.lock'));
-  console.log('multiple');
-  console.log(multiple);
   // Copy over some of the devDependencies
   appPackage.dependencies = appPackage.dependencies || {};
 
@@ -71,7 +69,7 @@ module.exports = function(
 
   const templatePath = template
     ? path.resolve(originalDirectory, template)
-    : path.join(ownPath, useTemplate);
+    : path.join(ownPath, multiple ? 'template2' : 'template');
   if (fs.existsSync(templatePath)) {
     if (ts) {
       console.log('using ts');

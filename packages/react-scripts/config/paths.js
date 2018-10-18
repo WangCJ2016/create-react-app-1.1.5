@@ -33,11 +33,14 @@ function ensureSlash(path, needsSlash) {
 }
 
 const array = appDirectory.split(path.sep);
-const _name = array[array.length - 4]
-if(_name !== 'wetime-web') {
-  throw Error('请在wetime-web库里使用，或者在wetime-web/src/app/下创建项目');
+const _name = array[array.length - 4];
+const _name_muliple = array[array.length - 2];
+if (_name !== 'wetime-web' && _name_muliple !== 'pages') {
+  throw Error(
+    '请在wetime-web库里使用，或者在wetime-web/src/app/下创建项目,或者在wetime-web下多入口项目下pages下创建'
+  );
 }
-const objectName = array[array.length - 1]
+const objectName = array[array.length - 1];
 
 const getPublicUrl = appPackageJson =>
   envPublicUrl || require(appPackageJson).homepage;
@@ -64,10 +67,11 @@ module.exports = {
   appPackageJson: resolveApp('package.json'),
   appSrc: resolveApp('src'),
   yarnLockFile: resolveApp('yarn.lock'),
+  appComm: resolveApp('../comm'),
   testsSetup: resolveApp('src/setupTests.js'),
   appNodeModules: resolveApp('node_modules'),
   publicUrl: getPublicUrl(resolveApp('package.json')),
-  servedPath: resolveApp(`/h5/app/${objectName}/`)+ '/',
+  servedPath: resolveApp(`/h5/app/${objectName}/`) + '/',
 };
 
 // @remove-on-eject-begin
@@ -83,16 +87,16 @@ module.exports = {
   appIndexJs: resolveApp('src/index.js'),
   appPackageJson: resolveApp('package.json'),
   appSrc: resolveApp('src'),
+  appComm: resolveApp('../comm'),
   yarnLockFile: resolveApp('yarn.lock'),
   testsSetup: resolveApp('src/setupTests.js'),
   appNodeModules: resolveApp('node_modules'),
   publicUrl: getPublicUrl(resolveApp('package.json')),
-  servedPath: resolveApp(`/h5/app/${objectName}/`)+ '/',
+  servedPath: resolveApp(`/h5/app/${objectName}/`) + '/',
   // These properties only exist before ejecting:
   ownPath: resolveOwn('.'),
   ownNodeModules: resolveOwn('node_modules'), // This is empty on npm 3
 };
-
 
 const reactScriptsPath = resolveApp(`node_modules/${objectName}`);
 const reactScriptsLinked =
@@ -114,6 +118,7 @@ if (
     appPackageJson: resolveOwn('package.json'),
     appSrc: resolveOwn('template/src'),
     yarnLockFile: resolveOwn('template/yarn.lock'),
+    appComm: resolveApp('../comm'),
     testsSetup: resolveOwn('template/src/setupTests.js'),
     appNodeModules: resolveOwn('node_modules'),
     publicUrl: getPublicUrl(resolveOwn('package.json')),

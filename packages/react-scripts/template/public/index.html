@@ -20,36 +20,36 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
     <title>Babytree</title>
+    <style>
+     img { 
+          content: normal !important; 
+     }
+    </style>
     <script src="http://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
     <script>
-      fetch('http://yangqianyi.babytree-dev.com/wetime/promo/share/get_wx_sign')
+     const getDomain = function(host) {
+        const HostObj = {
+          dev: 'http://wangchaojian.babytree-dev.com',
+          test: 'http://20.babytree-test.com',
+          pre: 'http://www.pre.fpm.babytree.com',
+          online: 'http://webview.babytree.com'
+        }
+        if(host.indexOf('babytree-dev') > -1) return HostObj.dev
+        if(host.indexOf('babytree-test') > -1) return HostObj.test
+        if(host.indexOf('babytree') > -1) return HostObj.online
+        return HostObj.online
+      }
+      // 获取微信签名
+      const host = getDomain(window.location.href)
+      const url = host + '/wetime/promo/static/wechatSignWithEncodedUrl?url=' + btoa(window.location.href)
+      fetch(url)
       .then(res => res.json())
       .then(res => {
-        
-        if(res.status === 'success') {
-          var sign = res.data
+          console.log(res)
+          var sign = res
+          // sign.debug = true
           sign.jsApiList = ['onMenuShareTimeline','onMenuShareAppMessage','onMenuShareQQ','onMenuShareWeibo','onMenuShareQZone'];
-          console.log(sign)
           wx.config(sign);
-          wx.ready(() => {
-            // config信息验证后会执行ready方法，所有接口调用都必须在config接口获得结果之后，config是一个客户端的异步操作，所以如果需要在页面加载时就调用相关接口，则须把相关接口放在ready函数中调用来确保正确执行。对于用户触发时才调用的接口，则可以直接调用，不需要放在ready函数中。
-            var opt = {
-                title: '体验最潮黑科技，关键它还和你有关',
-                desc: '打开小时光实验室，体验一切和你有关的东方神秘黑科技',
-                link: windows.location.href,
-                imgUrl: 'http://pic10.babytreeimg.com/2018/0716/FkPQyH4UyGihDQ1Qi_h3BzXJ-pie_sm.jpg',
-            };
-            wx.onMenuShareAppMessage(opt);
-            wx.onMenuShareTimeline(opt);
-            wx.onMenuShareQQ(opt);
-            wx.onMenuShareWeibo(opt);
-            wx.onMenuShareQZone(opt);
-        });
-        wx.error(function(res){
-            // config信息验证失败会执行error函数，如签名过期导致验证失败，具体错误信息可以打开config的debug模式查看，也可以在返回的res参数中查看，对于SPA可以在这里更新签名。
-            console.log(res);
-        });
-        }
       })
       .catch(err => {
         console.warn(err)
@@ -71,6 +71,14 @@
       To begin the development, run `npm start` or `yarn start`.
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
+    <script src="//g.alicdn.com/fdilab/lib3rd/viewport-units-buggyfill/0.6.2/??viewport-units-buggyfill.hacks.min.js,viewport-units-buggyfill.min.js"></script>
+    <script>
+      window.onload = function () {
+        window.viewportUnitsBuggyfill.init({
+          hacks: window.viewportUnitsBuggyfillHacks
+        });
+      }
+    </script>
     
     <script src="https://as.alipayobjects.com/g/component/fastclick/1.0.6/fastclick.js"></script>
     <script>
