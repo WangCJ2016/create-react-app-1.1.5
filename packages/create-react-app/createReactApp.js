@@ -152,7 +152,7 @@ createApp(
   projectName,
   program.verbose,
   program.scriptsVersion,
-  true,
+  program.useNpm,
   hiddenProgram.internalTestingTemplate,
   program.multiple,
   program.ts
@@ -167,7 +167,6 @@ function createApp(name, verbose, version, useNpm, template, multiple, ts) {
   if (!isSafeToCreateProjectIn(root, name)) {
     process.exit(1);
   }
-
   console.log(`Creating a new React app in ${chalk.green(root)}.`);
   console.log();
 
@@ -182,7 +181,6 @@ function createApp(name, verbose, version, useNpm, template, multiple, ts) {
   );
 
   const useYarn = useNpm ? false : shouldUseYarn();
-  console.log(useYarn);
   const originalDirectory = process.cwd();
   process.chdir(root);
   if (!useYarn && !checkThatNpmCanReadCwd()) {
@@ -223,8 +221,7 @@ function createApp(name, verbose, version, useNpm, template, multiple, ts) {
     originalDirectory,
     template,
     useYarn,
-    multiple,
-    ts
+    multiple
   );
 }
 
@@ -303,7 +300,6 @@ function run(
 ) {
   const packageToInstall = getInstallPackage(version, originalDirectory);
   const allDependencies = ['react', 'react-dom', packageToInstall];
-
   console.log('Installing packages. This might take a couple of minutes.');
   getPackageName(packageToInstall)
     .then(packageName =>
@@ -330,13 +326,15 @@ function run(
       checkNodeVersion(packageName);
       setCaretRangeForRuntimeDeps(packageName);
 
-      const scriptsPath = path.resolve(
-        process.cwd(),
-        'node_modules',
-        packageName,
-        'scripts',
-        'init.js'
-      );
+      // const scriptsPath = path.resolve(
+      //   process.cwd(),
+      //   'node_modules',
+      //   packageName,
+      //   'scripts',
+      //   'init.js'
+      // );
+      const scriptsPath =
+        '/Users/wangchaojian/Desktop/wangchaojian/react/create-react-app-1.1.5/packages/react-scripts/scripts/init.js';
       const init = require(scriptsPath);
       init(root, appName, verbose, originalDirectory, template, multiple, ts);
       if (version === 'react-scripts@0.9.x') {

@@ -24,7 +24,7 @@ const postcssPxToViewport = require('postcss-px-to-viewport-opt');
 const postcssWriteSvg = require('postcss-write-svg');
 const postcssCssnext = require('postcss-cssnext');
 const postcssViewportUnits = require('postcss-viewport-units');
-const cssnano = require('cssnano');
+// const cssnano = require('cssnano');
 
 // Webpack uses `publicPath` to determine where the app is being served from.
 // In development, we always serve from the root. This makes config easier.
@@ -154,14 +154,15 @@ module.exports = {
             test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/],
             loader: require.resolve('url-loader'),
             options: {
-              limit: 10000,
+              limit: 1000,
               name: 'static/media/[name].[hash:8].[ext]',
             },
           },
           // Process JS with Babel.
           {
             test: /\.(js|jsx|mjs)$/,
-            include: [paths.appSrc, paths.appComm],
+            exclude: /node_modules/,
+            // include: [paths.appSrc, paths.appComm],
             loader: require.resolve('babel-loader'),
             options: {
               plugins: [
@@ -191,6 +192,7 @@ module.exports = {
           // in development "style" loader enables hot editing of CSS.
           {
             test: /\.css$/,
+            exclude: /\.module.css$/,
             use: [
               require.resolve('style-loader'),
               {
@@ -212,7 +214,9 @@ module.exports = {
                         '>1%',
                         'last 4 versions',
                         'Firefox ESR',
-                        'not ie < 9', // React doesn't support IE8 anyway
+                        'not ie < 9',
+                        'iOS >= 8',
+                        'Safari >= 8',
                       ],
                       flexbox: 'no-2009',
                     }),
@@ -220,7 +224,7 @@ module.exports = {
                     postcssAspectRatioMini({}),
                     postcssPxToViewport({
                       viewportWidth: 750, // (Number) The width of the viewport.
-                      viewportHeight: 1334, // (Number) The height of the viewport.
+                      viewportHeight: 1624, // (Number) The height of the viewport.
                       unitPrecision: 3, // (Number) The decimal numbers to allow the REM units to grow to.
                       viewportUnit: 'vw', // (String) Expected units.
                       selectorBlackList: ['.ignore', '.hairlines'], // (Array) The selectors to ignore and leave as px.
@@ -235,11 +239,70 @@ module.exports = {
                       warnForDuplicates: false,
                     }),
                     postcssViewportUnits({}),
-                    cssnano({
-                      preset: 'advanced',
-                      autoprefixer: false,
-                      'postcss-zindex': false,
+                    // cssnano({
+                    //   preset: 'advanced',
+                    //   autoprefixer: false,
+                    //   'postcss-zindex': false,
+                    // }),
+                  ],
+                },
+              },
+            ],
+          },
+          {
+            test: /\.module.css$/,
+            use: [
+              require.resolve('style-loader'),
+              {
+                loader: require.resolve('css-loader'),
+                options: {
+                  importLoaders: 1,
+                  modules: true,
+                },
+              },
+              {
+                loader: require.resolve('postcss-loader'),
+                options: {
+                  // Necessary for external CSS imports to work
+                  // https://github.com/facebookincubator/create-react-app/issues/2677
+                  ident: 'postcss',
+                  plugins: () => [
+                    require('postcss-flexbugs-fixes'),
+                    autoprefixer({
+                      browsers: [
+                        '>1%',
+                        'last 4 versions',
+                        'Firefox ESR',
+                        'not ie < 9',
+                        'iOS >= 8',
+                        'Safari >= 8',
+                      ],
+                      flexbox: 'no-2009',
                     }),
+
+                    postcssAspectRatioMini({}),
+                    postcssPxToViewport({
+                      viewportWidth: 750, // (Number) The width of the viewport.
+                      viewportHeight: 1624, // (Number) The height of the viewport.
+                      unitPrecision: 3, // (Number) The decimal numbers to allow the REM units to grow to.
+                      viewportUnit: 'vw', // (String) Expected units.
+                      selectorBlackList: ['.ignore', '.hairlines'], // (Array) The selectors to ignore and leave as px.
+                      minPixelValue: 1, // (Number) Set the minimum pixel value to replace.
+                      mediaQuery: false, // (Boolean) Allow px to be converted in media queries.
+                      exclude: /(\/|\\)(node_modules)(\/|\\)/,
+                    }),
+                    postcssWriteSvg({
+                      utf8: false,
+                    }),
+                    postcssCssnext({
+                      warnForDuplicates: false,
+                    }),
+                    postcssViewportUnits({}),
+                    // cssnano({
+                    //   preset: 'advanced',
+                    //   autoprefixer: false,
+                    //   'postcss-zindex': false,
+                    // }),
                   ],
                 },
               },
@@ -248,6 +311,7 @@ module.exports = {
           // 支持 less
           {
             test: /\.less$/,
+            exclude: /\.module.less$/,
             use: [
               require.resolve('style-loader'),
               {
@@ -269,7 +333,9 @@ module.exports = {
                         '>1%',
                         'last 4 versions',
                         'Firefox ESR',
-                        'not ie < 9', // React doesn't support IE8 anyway
+                        'not ie < 9',
+                        'iOS >= 8',
+                        'Safari >= 8',
                       ],
                       flexbox: 'no-2009',
                     }),
@@ -277,7 +343,7 @@ module.exports = {
                     postcssAspectRatioMini({}),
                     postcssPxToViewport({
                       viewportWidth: 750, // (Number) The width of the viewport.
-                      viewportHeight: 1334, // (Number) The height of the viewport.
+                      viewportHeight: 1624, // (Number) The height of the viewport.
                       unitPrecision: 3, // (Number) The decimal numbers to allow the REM units to grow to.
                       viewportUnit: 'vw', // (String) Expected units.
                       selectorBlackList: ['.ignore', '.hairlines'], // (Array) The selectors to ignore and leave as px.
@@ -292,11 +358,71 @@ module.exports = {
                       warnForDuplicates: false,
                     }),
                     postcssViewportUnits({}),
-                    cssnano({
-                      preset: 'advanced',
-                      autoprefixer: false,
-                      'postcss-zindex': false,
+                    // cssnano({
+                    //   preset: 'advanced',
+                    //   autoprefixer: false,
+                    //   'postcss-zindex': false,
+                    // }),
+                  ],
+                },
+              },
+              require.resolve('less-loader'),
+            ],
+          },
+          {
+            test: /\.module.less$/,
+            use: [
+              require.resolve('style-loader'),
+              {
+                loader: require.resolve('css-loader'),
+                options: {
+                  importLoaders: 1,
+                  modules: true,
+                },
+              },
+              {
+                loader: require.resolve('postcss-loader'),
+                options: {
+                  // Necessary for external CSS imports to work
+                  // https://github.com/facebookincubator/create-react-app/issues/2677
+                  ident: 'postcss',
+                  plugins: () => [
+                    require('postcss-flexbugs-fixes'),
+                    autoprefixer({
+                      browsers: [
+                        '>1%',
+                        'last 4 versions',
+                        'Firefox ESR',
+                        'not ie < 9',
+                        'iOS >= 8',
+                        'Safari >= 8',
+                      ],
+                      flexbox: 'no-2009',
                     }),
+
+                    postcssAspectRatioMini({}),
+                    postcssPxToViewport({
+                      viewportWidth: 750, // (Number) The width of the viewport.
+                      viewportHeight: 1624, // (Number) The height of the viewport.
+                      unitPrecision: 3, // (Number) The decimal numbers to allow the REM units to grow to.
+                      viewportUnit: 'vw', // (String) Expected units.
+                      selectorBlackList: ['.ignore', '.hairlines'], // (Array) The selectors to ignore and leave as px.
+                      minPixelValue: 1, // (Number) Set the minimum pixel value to replace.
+                      mediaQuery: false, // (Boolean) Allow px to be converted in media queries.
+                      exclude: /(\/|\\)(node_modules)(\/|\\)/,
+                    }),
+                    postcssWriteSvg({
+                      utf8: false,
+                    }),
+                    postcssCssnext({
+                      warnForDuplicates: false,
+                    }),
+                    postcssViewportUnits({}),
+                    // cssnano({
+                    //   preset: 'advanced',
+                    //   autoprefixer: false,
+                    //   'postcss-zindex': false,
+                    // }),
                   ],
                 },
               },
@@ -306,6 +432,7 @@ module.exports = {
           // 支持scss
           {
             test: /\.scss$/,
+            exclude: /\.module.scss$/,
             use: [
               require.resolve('style-loader'),
               {
@@ -327,7 +454,9 @@ module.exports = {
                         '>1%',
                         'last 4 versions',
                         'Firefox ESR',
-                        'not ie < 9', // React doesn't support IE8 anyway
+                        'not ie < 9',
+                        'iOS >= 8',
+                        'Safari >= 8',
                       ],
                       flexbox: 'no-2009',
                     }),
@@ -335,7 +464,7 @@ module.exports = {
                     postcssAspectRatioMini({}),
                     postcssPxToViewport({
                       viewportWidth: 750, // (Number) The width of the viewport.
-                      viewportHeight: 1334, // (Number) The height of the viewport.
+                      viewportHeight: 1624, // (Number) The height of the viewport.
                       unitPrecision: 3, // (Number) The decimal numbers to allow the REM units to grow to.
                       viewportUnit: 'vw', // (String) Expected units.
                       selectorBlackList: ['.ignore', '.hairlines'], // (Array) The selectors to ignore and leave as px.
@@ -350,11 +479,71 @@ module.exports = {
                       warnForDuplicates: false,
                     }),
                     postcssViewportUnits({}),
-                    cssnano({
-                      preset: 'advanced',
-                      autoprefixer: false,
-                      'postcss-zindex': false,
+                    // cssnano({
+                    //   preset: 'advanced',
+                    //   autoprefixer: false,
+                    //   'postcss-zindex': false,
+                    // }),
+                  ],
+                },
+              },
+              require.resolve('sass-loader'),
+            ],
+          },
+          {
+            test: /\.module.scss$/,
+            use: [
+              require.resolve('style-loader'),
+              {
+                loader: require.resolve('css-loader'),
+                options: {
+                  importLoaders: 1,
+                  modules: true,
+                },
+              },
+              {
+                loader: require.resolve('postcss-loader'),
+                options: {
+                  // Necessary for external CSS imports to work
+                  // https://github.com/facebookincubator/create-react-app/issues/2677
+                  ident: 'postcss',
+                  plugins: () => [
+                    require('postcss-flexbugs-fixes'),
+                    autoprefixer({
+                      browsers: [
+                        '>1%',
+                        'last 4 versions',
+                        'Firefox ESR',
+                        'not ie < 9',
+                        'iOS >= 8',
+                        'Safari >= 8',
+                      ],
+                      flexbox: 'no-2009',
                     }),
+
+                    postcssAspectRatioMini({}),
+                    postcssPxToViewport({
+                      viewportWidth: 750, // (Number) The width of the viewport.
+                      viewportHeight: 1624, // (Number) The height of the viewport.
+                      unitPrecision: 3, // (Number) The decimal numbers to allow the REM units to grow to.
+                      viewportUnit: 'vw', // (String) Expected units.
+                      selectorBlackList: ['.ignore', '.hairlines'], // (Array) The selectors to ignore and leave as px.
+                      minPixelValue: 1, // (Number) Set the minimum pixel value to replace.
+                      mediaQuery: false, // (Boolean) Allow px to be converted in media queries.
+                      exclude: /(\/|\\)(node_modules)(\/|\\)/,
+                    }),
+                    postcssWriteSvg({
+                      utf8: false,
+                    }),
+                    postcssCssnext({
+                      warnForDuplicates: false,
+                    }),
+                    postcssViewportUnits({}),
+                    // cssnano({
+                    //   preset: 'advanced',
+                    //   autoprefixer: false,
+                    //   'postcss-zindex': false,
+                    // }),
                   ],
                 },
               },

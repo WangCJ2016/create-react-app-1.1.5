@@ -2,8 +2,8 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="shortcut icon" href="//static02.babytreeimg.com/img/common/favicon.ico" type="image/x-icon" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, shrink-to-fit=no, user-scalable=no" />
     <meta name="theme-color" content="#000000">
     <!--
       manifest.json provides metadata used when your web app is added to the
@@ -25,36 +25,41 @@
           content: normal !important; 
      }
     </style>
-    <script src="http://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+    <script src="https://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+    <script src='//qzonestyle.gtimg.cn/qzone/qzact/common/share/share.js'></script>
     <script>
-     const getDomain = function(host) {
-        const HostObj = {
-          dev: 'http://wangchaojian.babytree-dev.com',
-          test: 'http://20.babytree-test.com',
-          pre: 'http://www.pre.fpm.babytree.com',
-          online: 'http://webview.babytree.com'
-        }
-        if(host.indexOf('babytree-dev') > -1) return HostObj.dev
-        if(host.indexOf('babytree-test') > -1) return HostObj.test
-        if(host.indexOf('babytree') > -1) return HostObj.online
-        return HostObj.online
+      const getDomain = function(host) {
+         const protocol = window.location.protocol === 'https:' ? 'https' : 'http'
+         const HostObj = {
+           dev: `${protocol}://wangchaojian.babytree-dev.com`,
+           test: `${protocol}://20.babytree-test.com`,
+           pre: `${protocol}http://www.pre.fpm.babytree.com`,
+           online: `${protocol}://webview.babytree.com`
+         }
+         if(host.indexOf('babytree-dev') > -1) return HostObj.dev
+         if(host.indexOf('babytree-test') > -1) return HostObj.test
+         if(host.indexOf('babytree') > -1) return HostObj.online
+         return HostObj.online
+       }
+       // 获取微信签名
+       const host = getDomain(window.location.href)
+       const url = host + '/wetime/promo/static/wechatSignWithEncodedUrl?url=' + btoa(window.location.href)
+       var xhr = new XMLHttpRequest()
+       xhr.onreadystatechange = function(){
+        if(xhr.readyState == 4){
+            if(xhr.status == 200){
+               console.log(xhr.response)  
+               const sign = JSON.parse(xhr.response) 
+               sign.jsApiList = ['onMenuShareTimeline','onMenuShareAppMessage','onMenuShareQQ','onMenuShareWeibo','onMenuShareQZone'];
+               wx.config(sign);
+            }
+          }
       }
-      // 获取微信签名
-      const host = getDomain(window.location.href)
-      const url = host + '/wetime/promo/static/wechatSignWithEncodedUrl?url=' + btoa(window.location.href)
-      fetch(url)
-      .then(res => res.json())
-      .then(res => {
-          console.log(res)
-          var sign = res
-          // sign.debug = true
-          sign.jsApiList = ['onMenuShareTimeline','onMenuShareAppMessage','onMenuShareQQ','onMenuShareWeibo','onMenuShareQZone'];
-          wx.config(sign);
-      })
-      .catch(err => {
-        console.warn(err)
-      })
-    </script>
+      //发送请求
+      xhr.open('get',url,true);
+      xhr.send();
+      
+     </script>
   </head>
   <body>
     <noscript>

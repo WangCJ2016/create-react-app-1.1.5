@@ -8,7 +8,7 @@ const ManifestPlugin = require('webpack-manifest-plugin');
 const InterpolateHtmlPlugin = require('react-dev-utils/InterpolateHtmlPlugin');
 const SWPrecacheWebpackPlugin = require('sw-precache-webpack-plugin');
 const eslintFormatter = require('react-dev-utils/eslintFormatter');
-const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin');
+// const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin');
 const paths = require('./paths');
 const { AutoWebPlugin } = require('web-webpack-plugin');
 const getClientEnvironment = require('./env');
@@ -18,7 +18,7 @@ const postcssPxToViewport = require('postcss-px-to-viewport-opt');
 const postcssWriteSvg = require('postcss-write-svg');
 const postcssCssnext = require('postcss-cssnext');
 const postcssViewportUnits = require('postcss-viewport-units');
-const cssnano = require('cssnano');
+// const cssnano = require('cssnano');
 
 const appSrc = path.resolve('./pages');
 // Webpack uses `publicPath` to determine where the app is being served from.
@@ -46,10 +46,10 @@ const autoWebPlugin = new AutoWebPlugin('pages', {
   }, // HTML 模版文件所在的文件路径
   //   postEntrys: ['./common.css'],// 所有页面都依赖这份通用的 CSS 样式文件
   // 提取出所有页面公共的代码
+  preEntrys: [require.resolve('./polyfills')],
   entry: pageName => {
     return path.resolve('./pages', pageName, 'src', 'index.js');
   },
-  preEntrys: [require.resolve('./polyfills')],
   commonsChunk: {
     name: 'common', // 提取出公共代码 Chunk 的名称
   },
@@ -131,14 +131,14 @@ module.exports = {
       // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
       'react-native': 'react-native-web',
     },
-    plugins: [
-      // Prevents users from importing files from outside of src/ (or node_modules/).
-      // This often causes confusion because we only process files within src/ with babel.
-      // To fix this, we prevent you from importing files out of src/ -- if you'd like to,
-      // please link the files into your node_modules/ and let module-resolution kick in.
-      // Make sure your source files are compiled, as they will not be processed in any way.
-      new ModuleScopePlugin(appSrc, [paths.appPackageJson]),
-    ],
+    // plugins: [
+    //   // Prevents users from importing files from outside of src/ (or node_modules/).
+    //   // This often causes confusion because we only process files within src/ with babel.
+    //   // To fix this, we prevent you from importing files out of src/ -- if you'd like to,
+    //   // please link the files into your node_modules/ and let module-resolution kick in.
+    //   // Make sure your source files are compiled, as they will not be processed in any way.
+    //   new ModuleScopePlugin(appSrc, [paths.appPackageJson]),
+    // ],
   },
   module: {
     strictExportPresence: true,
@@ -184,7 +184,7 @@ module.exports = {
             test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/],
             loader: require.resolve('url-loader'),
             options: {
-              limit: 10000,
+              limit: 1000,
               name: 'static/media/[name].[hash:8].[ext]',
             },
           },
@@ -224,6 +224,7 @@ module.exports = {
           // in the main CSS file.
           {
             test: /\.css$/,
+            exclude: /\.module.css$/,
             loader: ExtractTextPlugin.extract(
               Object.assign(
                 {
@@ -255,14 +256,16 @@ module.exports = {
                               '>1%',
                               'last 4 versions',
                               'Firefox ESR',
-                              'not ie < 9', // React doesn't support IE8 anyway
+                              'not ie < 9',
+                              'iOS >= 8',
+                              'Safari >= 8',
                             ],
                             flexbox: 'no-2009',
                           }),
                           postcssAspectRatioMini({}),
                           postcssPxToViewport({
                             viewportWidth: 750, // (Number) The width of the viewport.
-                            viewportHeight: 1334, // (Number) The height of the viewport.
+                            viewportHeight: 1624, // (Number) The height of the viewport.
                             unitPrecision: 3, // (Number) The decimal numbers to allow the REM units to grow to.
                             viewportUnit: 'vw', // (String) Expected units.
                             selectorBlackList: ['.ignore', '.hairlines'], // (Array) The selectors to ignore and leave as px.
@@ -277,11 +280,11 @@ module.exports = {
                             warnForDuplicates: false,
                           }),
                           postcssViewportUnits({}),
-                          cssnano({
-                            preset: 'advanced',
-                            autoprefixer: false,
-                            'postcss-zindex': false,
-                          }),
+                          // cssnano({
+                          //   preset: 'advanced',
+                          //   autoprefixer: false,
+                          //   'postcss-zindex': false,
+                          // }),
                         ],
                       },
                     },
@@ -294,6 +297,7 @@ module.exports = {
           },
           {
             test: /\.less$/,
+            exclude: /\.module.less$/,
             loader: ExtractTextPlugin.extract(
               Object.assign(
                 {
@@ -325,14 +329,16 @@ module.exports = {
                               '>1%',
                               'last 4 versions',
                               'Firefox ESR',
-                              'not ie < 9', // React doesn't support IE8 anyway
+                              'not ie < 9',
+                              'iOS >= 8',
+                              'Safari >= 8',
                             ],
                             flexbox: 'no-2009',
                           }),
                           postcssAspectRatioMini({}),
                           postcssPxToViewport({
                             viewportWidth: 750, // (Number) The width of the viewport.
-                            viewportHeight: 1334, // (Number) The height of the viewport.
+                            viewportHeight: 1624, // (Number) The height of the viewport.
                             unitPrecision: 3, // (Number) The decimal numbers to allow the REM units to grow to.
                             viewportUnit: 'vw', // (String) Expected units.
                             selectorBlackList: ['.ignore', '.hairlines'], // (Array) The selectors to ignore and leave as px.
@@ -347,11 +353,11 @@ module.exports = {
                             warnForDuplicates: false,
                           }),
                           postcssViewportUnits({}),
-                          cssnano({
-                            preset: 'advanced',
-                            autoprefixer: false,
-                            'postcss-zindex': false,
-                          }),
+                          // cssnano({
+                          //   preset: 'advanced',
+                          //   autoprefixer: false,
+                          //   'postcss-zindex': false,
+                          // }),
                         ],
                       },
                     },
@@ -366,6 +372,7 @@ module.exports = {
           // sass
           {
             test: /\.scss$/,
+            exclude: /\.module.scss$/,
             loader: ExtractTextPlugin.extract(
               Object.assign(
                 {
@@ -397,14 +404,16 @@ module.exports = {
                               '>1%',
                               'last 4 versions',
                               'Firefox ESR',
-                              'not ie < 9', // React doesn't support IE8 anyway
+                              'not ie < 9',
+                              'iOS >= 8',
+                              'Safari >= 8',
                             ],
                             flexbox: 'no-2009',
                           }),
                           postcssAspectRatioMini({}),
                           postcssPxToViewport({
                             viewportWidth: 750, // (Number) The width of the viewport.
-                            viewportHeight: 1334, // (Number) The height of the viewport.
+                            viewportHeight: 1624, // (Number) The height of the viewport.
                             unitPrecision: 3, // (Number) The decimal numbers to allow the REM units to grow to.
                             viewportUnit: 'vw', // (String) Expected units.
                             selectorBlackList: ['.ignore', '.hairlines'], // (Array) The selectors to ignore and leave as px.
@@ -419,11 +428,235 @@ module.exports = {
                             warnForDuplicates: false,
                           }),
                           postcssViewportUnits({}),
-                          cssnano({
-                            preset: 'advanced',
-                            autoprefixer: false,
-                            'postcss-zindex': false,
+                          // cssnano({
+                          //   preset: 'advanced',
+                          //   autoprefixer: false,
+                          //   'postcss-zindex': false,
+                          // }),
+                        ],
+                      },
+                    },
+                    require.resolve('sass-loader'),
+                  ],
+                },
+                extractTextPluginOptions
+              )
+            ),
+            // Note: this won't work without `new ExtractTextPlugin()` in `plugins`.
+          },
+
+          // css module
+          {
+            test: /\.module.css$/,
+            loader: ExtractTextPlugin.extract(
+              Object.assign(
+                {
+                  fallback: {
+                    loader: require.resolve('style-loader'),
+                    options: {
+                      hmr: false,
+                    },
+                  },
+                  use: [
+                    {
+                      loader: require.resolve('css-loader'),
+                      options: {
+                        importLoaders: 1,
+                        modules: true,
+                        minimize: true,
+                        sourceMap: shouldUseSourceMap,
+                      },
+                    },
+                    {
+                      loader: require.resolve('postcss-loader'),
+                      options: {
+                        // Necessary for external CSS imports to work
+                        // https://github.com/facebookincubator/create-react-app/issues/2677
+                        ident: 'postcss',
+                        plugins: () => [
+                          require('postcss-flexbugs-fixes'),
+                          autoprefixer({
+                            browsers: [
+                              '>1%',
+                              'last 4 versions',
+                              'Firefox ESR',
+                              'not ie < 9',
+                              'iOS >= 8',
+                              'Safari >= 8',
+                            ],
+                            flexbox: 'no-2009',
                           }),
+                          postcssAspectRatioMini({}),
+                          postcssPxToViewport({
+                            viewportWidth: 750, // (Number) The width of the viewport.
+                            viewportHeight: 1624, // (Number) The height of the viewport.
+                            unitPrecision: 3, // (Number) The decimal numbers to allow the REM units to grow to.
+                            viewportUnit: 'vw', // (String) Expected units.
+                            selectorBlackList: ['.ignore', '.hairlines'], // (Array) The selectors to ignore and leave as px.
+                            minPixelValue: 1, // (Number) Set the minimum pixel value to replace.
+                            mediaQuery: false, // (Boolean) Allow px to be converted in media queries.
+                            exclude: /(\/|\\)(node_modules)(\/|\\)/,
+                          }),
+                          postcssWriteSvg({
+                            utf8: false,
+                          }),
+                          postcssCssnext({
+                            warnForDuplicates: false,
+                          }),
+                          postcssViewportUnits({}),
+                          // cssnano({
+                          //   preset: 'advanced',
+                          //   autoprefixer: false,
+                          //   'postcss-zindex': false,
+                          // }),
+                        ],
+                      },
+                    },
+                  ],
+                },
+                extractTextPluginOptions
+              )
+            ),
+            // Note: this won't work without `new ExtractTextPlugin()` in `plugins`.
+          },
+          {
+            test: /\.module.less$/,
+            loader: ExtractTextPlugin.extract(
+              Object.assign(
+                {
+                  fallback: {
+                    loader: require.resolve('style-loader'),
+                    options: {
+                      hmr: false,
+                    },
+                  },
+                  use: [
+                    {
+                      loader: require.resolve('css-loader'),
+                      options: {
+                        importLoaders: 1,
+                        modules: true,
+                        minimize: true,
+                        sourceMap: shouldUseSourceMap,
+                      },
+                    },
+                    {
+                      loader: require.resolve('postcss-loader'),
+                      options: {
+                        // Necessary for external CSS imports to work
+                        // https://github.com/facebookincubator/create-react-app/issues/2677
+                        ident: 'postcss',
+                        plugins: () => [
+                          require('postcss-flexbugs-fixes'),
+                          autoprefixer({
+                            browsers: [
+                              '>1%',
+                              'last 4 versions',
+                              'Firefox ESR',
+                              'not ie < 9',
+                              'iOS >= 8',
+                              'Safari >= 8',
+                            ],
+                            flexbox: 'no-2009',
+                          }),
+                          postcssAspectRatioMini({}),
+                          postcssPxToViewport({
+                            viewportWidth: 750, // (Number) The width of the viewport.
+                            viewportHeight: 1624, // (Number) The height of the viewport.
+                            unitPrecision: 3, // (Number) The decimal numbers to allow the REM units to grow to.
+                            viewportUnit: 'vw', // (String) Expected units.
+                            selectorBlackList: ['.ignore', '.hairlines'], // (Array) The selectors to ignore and leave as px.
+                            minPixelValue: 1, // (Number) Set the minimum pixel value to replace.
+                            mediaQuery: false, // (Boolean) Allow px to be converted in media queries.
+                            exclude: /(\/|\\)(node_modules)(\/|\\)/,
+                          }),
+                          postcssWriteSvg({
+                            utf8: false,
+                          }),
+                          postcssCssnext({
+                            warnForDuplicates: false,
+                          }),
+                          postcssViewportUnits({}),
+                          // cssnano({
+                          //   preset: 'advanced',
+                          //   autoprefixer: false,
+                          //   'postcss-zindex': false,
+                          // }),
+                        ],
+                      },
+                    },
+                    require.resolve('less-loader'),
+                  ],
+                },
+                extractTextPluginOptions
+              )
+            ),
+            // Note: this won't work without `new ExtractTextPlugin()` in `plugins`.
+          },
+          // sass
+          {
+            test: /\.module.scss$/,
+            loader: ExtractTextPlugin.extract(
+              Object.assign(
+                {
+                  fallback: {
+                    loader: require.resolve('style-loader'),
+                    options: {
+                      hmr: false,
+                    },
+                  },
+                  use: [
+                    {
+                      loader: require.resolve('css-loader'),
+                      options: {
+                        importLoaders: 1,
+                        modules: true,
+                        minimize: true,
+                        sourceMap: shouldUseSourceMap,
+                      },
+                    },
+                    {
+                      loader: require.resolve('postcss-loader'),
+                      options: {
+                        // Necessary for external CSS imports to work
+                        // https://github.com/facebookincubator/create-react-app/issues/2677
+                        ident: 'postcss',
+                        plugins: () => [
+                          require('postcss-flexbugs-fixes'),
+                          autoprefixer({
+                            browsers: [
+                              '>1%',
+                              'last 4 versions',
+                              'Firefox ESR',
+                              'not ie < 9',
+                              'iOS >= 8',
+                              'Safari >= 8',
+                            ],
+                            flexbox: 'no-2009',
+                          }),
+                          postcssAspectRatioMini({}),
+                          postcssPxToViewport({
+                            viewportWidth: 750, // (Number) The width of the viewport.
+                            viewportHeight: 1624, // (Number) The height of the viewport.
+                            unitPrecision: 3, // (Number) The decimal numbers to allow the REM units to grow to.
+                            viewportUnit: 'vw', // (String) Expected units.
+                            selectorBlackList: ['.ignore', '.hairlines'], // (Array) The selectors to ignore and leave as px.
+                            minPixelValue: 1, // (Number) Set the minimum pixel value to replace.
+                            mediaQuery: false, // (Boolean) Allow px to be converted in media queries.
+                            exclude: /(\/|\\)(node_modules)(\/|\\)/,
+                          }),
+                          postcssWriteSvg({
+                            utf8: false,
+                          }),
+                          postcssCssnext({
+                            warnForDuplicates: false,
+                          }),
+                          postcssViewportUnits({}),
+                          // cssnano({
+                          //   preset: 'advanced',
+                          //   autoprefixer: false,
+                          //   'postcss-zindex': false,
+                          // }),
                         ],
                       },
                     },
