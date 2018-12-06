@@ -1,7 +1,7 @@
 {
   "name": "lama-react-scripts",
-  "version": "0.2.3",
-  "description": "Configuration and scripts for Create React App.",
+  "version": "0.2.6",
+  "description": "Create React App for wetime-web",
   "repository": "WangCJ2016/create-react-app-1.1.5",
   "license": "MIT",
   "engines": {

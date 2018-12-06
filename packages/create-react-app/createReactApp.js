@@ -326,15 +326,15 @@ function run(
       checkNodeVersion(packageName);
       setCaretRangeForRuntimeDeps(packageName);
 
-      // const scriptsPath = path.resolve(
-      //   process.cwd(),
-      //   'node_modules',
-      //   packageName,
-      //   'scripts',
-      //   'init.js'
-      // );
-      const scriptsPath =
-        '/Users/wangchaojian/Desktop/wangchaojian/react/create-react-app-1.1.5/packages/react-scripts/scripts/init.js';
+      const scriptsPath = path.resolve(
+        process.cwd(),
+        'node_modules',
+        packageName,
+        'scripts',
+        'init.js'
+      );
+      // const scriptsPath =
+      //   '/Users/wangchaojian/Desktop/wangchaojian/react/create-react-app-1.1.5/packages/react-scripts/scripts/init.js';
       const init = require(scriptsPath);
       init(root, appName, verbose, originalDirectory, template, multiple, ts);
       if (version === 'react-scripts@0.9.x') {

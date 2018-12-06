@@ -138,6 +138,7 @@ module.exports = {
             options: {
               formatter: eslintFormatter,
               eslintPath: require.resolve('eslint'),
+              emitError: true,
               // @remove-on-eject-begin
               // TODO: consider separate config for production,
               // e.g. to enable no-console and no-debugger only in production.
@@ -151,7 +152,7 @@ module.exports = {
             loader: require.resolve('eslint-loader'),
           },
         ],
-        include: paths.appSrc,
+        exclude: /node_modules/,
       },
       {
         // "oneOf" will traverse all following loaders until one will

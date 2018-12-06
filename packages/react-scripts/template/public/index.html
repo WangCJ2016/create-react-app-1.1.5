@@ -31,10 +31,10 @@
       const getDomain = function(host) {
          const protocol = window.location.protocol === 'https:' ? 'https' : 'http'
          const HostObj = {
-           dev: `${protocol}://wangchaojian.babytree-dev.com`,
-           test: `${protocol}://20.babytree-test.com`,
-           pre: `${protocol}http://www.pre.fpm.babytree.com`,
-           online: `${protocol}://webview.babytree.com`
+           dev: protocol + '://wangchaojian.babytree-dev.com',
+           test: protocol + '://20.babytree-test.com',
+           pre: protocol + 'http://www.pre.fpm.babytree.com',
+           online: protocol + '://webview.babytree.com'
          }
          if(host.indexOf('babytree-dev') > -1) return HostObj.dev
          if(host.indexOf('babytree-test') > -1) return HostObj.test
