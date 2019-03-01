@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <link rel="shortcut icon" href="//static02.babytreeimg.com/img/common/favicon.ico" type="image/x-icon" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, shrink-to-fit=no, user-scalable=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, shrink-to-fit=no, user-scalable=no, viewport-fit=cover" />
     <meta name="theme-color" content="#000000">
     <!--
       manifest.json provides metadata used when your web app is added to the
@@ -25,41 +25,24 @@
           content: normal !important; 
      }
     </style>
-    <script src="https://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
-    <script src='//qzonestyle.gtimg.cn/qzone/qzact/common/share/share.js'></script>
-    <script>
-      const getDomain = function(host) {
-         const protocol = window.location.protocol === 'https:' ? 'https' : 'http'
-         const HostObj = {
-           dev: protocol + '://wangchaojian.babytree-dev.com',
-           test: protocol + '://20.babytree-test.com',
-           pre: protocol + 'http://www.pre.fpm.babytree.com',
-           online: protocol + '://webview.babytree.com'
-         }
-         if(host.indexOf('babytree-dev') > -1) return HostObj.dev
-         if(host.indexOf('babytree-test') > -1) return HostObj.test
-         if(host.indexOf('babytree') > -1) return HostObj.online
-         return HostObj.online
-       }
-       // 获取微信签名
-       const host = getDomain(window.location.href)
-       const url = host + '/wetime/promo/static/wechatSignWithEncodedUrl?url=' + btoa(window.location.href)
-       var xhr = new XMLHttpRequest()
-       xhr.onreadystatechange = function(){
-        if(xhr.readyState == 4){
-            if(xhr.status == 200){
-               console.log(xhr.response)  
-               const sign = JSON.parse(xhr.response) 
-               sign.jsApiList = ['onMenuShareTimeline','onMenuShareAppMessage','onMenuShareQQ','onMenuShareWeibo','onMenuShareQZone'];
-               wx.config(sign);
-            }
-          }
-      }
-      //发送请求
-      xhr.open('get',url,true);
-      xhr.send();
-      
-     </script>
+   <!-- 微信分享 -->
+   <script src="http://static02.babytreeimg.com/img/bca/share/1.1.0/share.min.js"></script>
+   <!-- 监控 -->
+   <script src="//static02.babytreeimg.com/img/bca/monitor/2.0.1/bbtMonitor.min.js"></script>
+   <!-- <script src='./monitor.js'></script> -->
+   <script>
+     // 这句一定要在onload触发之前调用
+     bbtMonitor.setProjectId("wetime").track()
+   </script>
+   <script>
+      //  window.bbtShare.setShareInfo({
+      //      app_id: 'sharemp', // 宝宝树平台生成的id
+      //      title: '宝宝树',
+      //      content: '全球最大的母婴孕育社区',
+      //      url: 'http://m.babytree.com',
+      //      imgUrl: 'http://img01.babytreeimg.com/img/mg/dist/project/wetime/img/logo.png'
+      //  })
+   </script>
   </head>
   <body>
     <noscript>

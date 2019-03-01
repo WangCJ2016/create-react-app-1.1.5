@@ -35,13 +35,16 @@ function ensureSlash(path, needsSlash) {
 const array = appDirectory.split(path.sep);
 const _name = array[array.length - 4];
 const _name_muliple = array[array.length - 2];
-if (_name !== 'wetime-web' && _name_muliple !== 'pages') {
+if (
+  _name_muliple !== 'pages' &&
+  !(_name === 'wetime-web' || _name === 'wetime-activity')
+) {
   throw Error(
     '请在wetime-web库里使用，或者在wetime-web/src/app/下创建项目,或者在wetime-web下多入口项目下pages下创建'
   );
 }
 const objectName = array[array.length - 1];
-
+const repositoryName = array[array.length - 2];
 const getPublicUrl = appPackageJson =>
   envPublicUrl || require(appPackageJson).homepage;
 
@@ -51,16 +54,11 @@ const getPublicUrl = appPackageJson =>
 // single-page apps that may serve index.html for nested URLs like /todos/42.
 // We can't use a relative path in HTML because we don't want to load something
 // like /todos/42/static/js/bundle.7289d.js. We have to know the root.
-function getServedPath(appPackageJson) {
-  const publicUrl = getPublicUrl(appPackageJson);
-  const servedUrl =
-    envPublicUrl || (publicUrl ? url.parse(publicUrl).pathname : '/');
-  return ensureSlash(servedUrl, true);
-}
+
 // config after eject: we're in ./config/
 module.exports = {
   dotenv: resolveApp('.env'),
-  appBuild: resolveApp(`../../../dist/app/${objectName}/`),
+  appBuild: resolveApp(`../../../dist/${repositoryName}/${objectName}/`),
   appPublic: resolveApp('public'),
   appHtml: resolveApp('public/index.html'),
   appIndexJs: resolveApp('src/index.js'),
@@ -71,7 +69,7 @@ module.exports = {
   testsSetup: resolveApp('src/setupTests.js'),
   appNodeModules: resolveApp('node_modules'),
   publicUrl: getPublicUrl(resolveApp('package.json')),
-  servedPath: resolveApp(`/h5/app/${objectName}/`) + '/',
+  servedPath: resolveApp(`/h5/${repositoryName}/${objectName}/`) + '/',
 };
 
 // @remove-on-eject-begin
@@ -81,7 +79,7 @@ const resolveOwn = relativePath => path.resolve(__dirname, '..', relativePath);
 module.exports = {
   dotenv: resolveApp('.env'),
   appPath: resolveApp('.'),
-  appBuild: resolveApp(`../../../dist/app/${objectName}/`),
+  appBuild: resolveApp(`../../../dist/${repositoryName}/${objectName}/`),
   appPublic: resolveApp('public'),
   appHtml: resolveApp('public/index.html'),
   appIndexJs: resolveApp('src/index.js'),
@@ -92,7 +90,7 @@ module.exports = {
   testsSetup: resolveApp('src/setupTests.js'),
   appNodeModules: resolveApp('node_modules'),
   publicUrl: getPublicUrl(resolveApp('package.json')),
-  servedPath: resolveApp(`/h5/app/${objectName}/`) + '/',
+  servedPath: resolveApp(`/h5/${repositoryName}/${objectName}/`) + '/',
   // These properties only exist before ejecting:
   ownPath: resolveOwn('.'),
   ownNodeModules: resolveOwn('node_modules'), // This is empty on npm 3
@@ -111,7 +109,7 @@ if (
   module.exports = {
     dotenv: resolveOwn('template/.env'),
     appPath: resolveApp('.'),
-    appBuild: resolveOwn(`../../../dist/app/${objectName}/`),
+    appBuild: resolveOwn(`../../../dist/${repositoryName}/${objectName}/`),
     appPublic: resolveOwn('template/public'),
     appHtml: resolveOwn('template/public/index.html'),
     appIndexJs: resolveOwn('template/src/index.js'),
@@ -122,7 +120,7 @@ if (
     testsSetup: resolveOwn('template/src/setupTests.js'),
     appNodeModules: resolveOwn('node_modules'),
     publicUrl: getPublicUrl(resolveOwn('package.json')),
-    servedPath: resolveApp(`/h5/app/${objectName}/`) + '/',
+    servedPath: resolveApp(`/h5/${repositoryName}/${objectName}/`) + '/',
     // These properties only exist before ejecting:
     ownPath: resolveOwn('.'),
     ownNodeModules: resolveOwn('node_modules'),
